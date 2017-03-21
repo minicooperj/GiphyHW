@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <title>Cary's HodgePodge Jif Page</title>
+  <!-- Latest compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+  <link rel="stylesheet" href="style.css">
+
+
+</head>
+
+<body>
+
+  <div class="row">
+    <div id="arraydiv" class="col-md-12">
+  <!-- <button id="gif-button" class="btn btn-success gif-button"> Gif Button</button> -->
+    </div>
+  </div>
+  
+  <div class="row">
+    <div id="gifdiv" class="col-md-9"></div>
+    <div id="inputdiv" class="col-md-3">
+      <div class="form-group">
+          <label for="gifInput">Type something</label>
+          <input type="gif" class="form-control" id="gifInput" placeholder="Search for gifs">
+          <button id="submit-button" class="btn btn-primary">Submit Gif</button>
+      </div>
+          
+    </div>
+
+  </div>
+
+  <script src="http://code.jquery.com/jquery-2.1.3.min.js"></script>
+  <script type="text/javascript">
+
+    var gifArray = [];
+
+    // When submit button is clicked, push input to array, refresh array div
+
+        $("#submit-button").on("click", function(event){
+
+          if($("#gifInput").val() === "") {
+
+            alert("Please enter something to search for!");
+            
+          } else {
+
+          var gifInput = $("#gifInput").val().trim();
+
+          gifArray.push(gifInput);
+          console.log(gifArray);
+
+          $("#arraydiv").empty();
+
+          for (i=0; i < gifArray.length; i++) {
+
+            var newButton = $("<button>");
+
+            newButton.attr("class", "btn btn-success gif-button");
+            newButton.attr("alt","gif button");
+            newButton.attr("val", gifArray[i]);
+            // console.log(newButton.attr("val"));
+
+            newButton.append(gifArray[i]);
+            $("#arraydiv").append(newButton);
+
+          };
+
+          $("#gifInput").val("");
+
+        }});
+
+
+        // When button is clicked fun the following functions
+    $("btn btn-success gif-button").on("click", function() {
+        console.log("click");
+      $("#gifdiv").empty();
+
+      var buttonVal = $(".gif-button").attr("val");
+      console.log(buttonVal);
+      for(i=0; i<10; i++){
+
+      // Creates a variable for the API query link
+      
+      
+      var queryURL = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" + buttonVal +"";
+
+      
+      // the function which triggers the API call
+      $.ajax({
+        url: queryURL,
+        method: "GET"
+      })
+
+      // when button click and API call is done 
+      .done(function(response) {
+
+        // creates variable 
+        var imageUrl = response.data.image_original_url;
+
+        //creates var for grabbing new image html elem and also creates element in background
+        var image = $("<img>");
+
+        // creates new attributes on each image
+        image.attr("src", imageUrl);
+        image.attr("alt", "image");
+        image.attr("class", "gifImage");
+
+        // adds image to html elem #images
+        $("#gifdiv").prepend(image);
+          });
+         }});
+
+
+
+    // 
+
+
+  </script>
+</body>
+
+</html>
