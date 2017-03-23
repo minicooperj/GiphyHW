@@ -23,7 +23,7 @@
     <div id="gifdiv" class="col-md-9"></div>
     <div id="inputdiv" class="col-md-3">
       <div class="form-group">
-          <label for="gifInput">Type something</label>
+          <label for="gifInput">Apu, Ned, Homer, Sir Alex Ferguson, The Clash, you name it</label>
           <input type="gif" class="form-control" id="gifInput" placeholder="Search for gifs">
           <button id="submit-button" class="btn btn-primary">Submit Gif</button>
       </div>
@@ -40,6 +40,8 @@
     // When submit button is clicked, push input to array, refresh array div
 
         $("#submit-button").on("click", function(event){
+
+          event.preventDefault();
 
           if($("#gifInput").val() === "") {
 
@@ -59,6 +61,7 @@
             var newButton = $("<button>");
 
             newButton.attr("class", "btn btn-success gif-button");
+            newButton.attr("id", "gif-button");
             newButton.attr("alt","gif button");
             newButton.attr("val", gifArray[i]);
             // console.log(newButton.attr("val"));
@@ -73,19 +76,24 @@
         }});
 
 
-        // When button is clicked fun the following functions
-    $("btn btn-success gif-button").on("click", function() {
-        console.log("click");
+
+
+        // When array button is clicked fun the following functions
+        $(document.body).on("click", ".gif-button", function(event) {
+
+        event.preventDefault();
+
+      
       $("#gifdiv").empty();
 
-      var buttonVal = $(".gif-button").attr("val");
+      var buttonVal = $(this).attr("val");
       console.log(buttonVal);
       for(i=0; i<10; i++){
 
       // Creates a variable for the API query link
       
       
-      var queryURL = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag=" + buttonVal +"";
+      var queryURL = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="+buttonVal+"";
 
       
       // the function which triggers the API call
@@ -97,14 +105,23 @@
       // when button click and API call is done 
       .done(function(response) {
 
-        // creates variable 
-        var imageUrl = response.data.image_original_url;
+        // console.log(response.data);
+        // creates variable for moving gif
+        var imageUrl = response.data.fixed_height_small_url;
+        console.log(imageUrl);
 
+        // creates variable for still gif
+
+        var stillUrl = response.data.fixed_height_small_still_url;
+        console.log(stillUrl);
         //creates var for grabbing new image html elem and also creates element in background
         var image = $("<img>");
 
         // creates new attributes on each image
         image.attr("src", imageUrl);
+        image.attr("still", stillUrl);
+        image.attr("active", imageUrl);
+        image.attr("img-state", "active");
         image.attr("alt", "image");
         image.attr("class", "gifImage");
 
@@ -115,7 +132,21 @@
 
 
 
-    // 
+$(document.body).on("click", ".gifImage", function(event) {
+
+      var state = $(this).attr("img-state");
+
+      if (state === "active") {
+        $(this).attr("src", $(this).attr("still"));
+        $(this).attr("img-state", "still");
+
+      } else if (state !== "active") {
+        $(this).attr("src", $(this).attr("active"));
+        $(this).attr("img-state", "active");        
+      }
+    });
+
+
 
 
   </script>
