@@ -83,52 +83,63 @@
 
         event.preventDefault();
 
-      
-      $("#gifdiv").empty();
+        $("#gifdiv").empty();
 
-      var buttonVal = $(this).attr("val");
-      console.log(buttonVal);
-      for(i=0; i<10; i++){
+        var buttonVal = $(this).attr("val");
+        console.log(buttonVal);
+      
+        // Creates a variable for the API query link
+      
+      
+        var queryURL = "http://api.giphy.com/v1/gifs/search?q="+buttonVal+"&api_key=dc6zaTOxFJmzC&limit=10";
 
-      // Creates a variable for the API query link
-      
-      
-      var queryURL = "http://api.giphy.com/v1/gifs/random?api_key=dc6zaTOxFJmzC&tag="+buttonVal+"";
-
-      
-      // the function which triggers the API call
-      $.ajax({
+        // the function which triggers the API call
+        $.ajax({
         url: queryURL,
         method: "GET"
-      })
+        })
 
       // when button click and API call is done 
-      .done(function(response) {
+        .done(function(response){
+            var results = response.data;
 
-        // console.log(response.data);
-        // creates variable for moving gif
-        var imageUrl = response.data.fixed_height_small_url;
-        console.log(imageUrl);
+          for(i=0; i<results.length; i++){
+          var gifDiv = $("<div class='item'>");
 
-        // creates variable for still gif
+          var rating = results[i].rating;
 
-        var stillUrl = response.data.fixed_height_small_still_url;
-        console.log(stillUrl);
-        //creates var for grabbing new image html elem and also creates element in background
-        var image = $("<img>");
+          var p = $("<p>").text("Rating: "+ rating);
+          // console.log(response.data);
+          // creates variable for moving gif
 
-        // creates new attributes on each image
-        image.attr("src", imageUrl);
-        image.attr("still", stillUrl);
-        image.attr("active", imageUrl);
-        image.attr("img-state", "active");
-        image.attr("alt", "image");
-        image.attr("class", "gifImage");
+          var image = $("<img>");
 
-        // adds image to html elem #images
-        $("#gifdiv").prepend(image);
-          });
-         }});
+          var imageUrl = results[i].images.fixed_height.url;
+          console.log(imageUrl);
+
+          // creates variable for still gif
+
+          var stillUrl = results[i].images.fixed_height_still.url;
+          console.log(stillUrl);
+          //creates var for grabbing new image html elem and also creates element in background
+          
+
+          // creates new attributes on each image
+          image.attr("src", imageUrl);
+          image.attr("still", stillUrl);
+          image.attr("active", imageUrl);
+          image.attr("img-state", "active");
+          image.attr("alt", "image");
+          image.attr("class", "gifImage");
+
+          // adds image to html elem #images
+          gifDiv.prepend(p);
+          gifDiv.prepend(image);
+
+          $("#gifdiv").prepend(gifDiv);
+          }});
+      }); 
+         
 
 
 
@@ -144,7 +155,8 @@ $(document.body).on("click", ".gifImage", function(event) {
         $(this).attr("src", $(this).attr("active"));
         $(this).attr("img-state", "active");        
       }
-    });
+        
+      });
 
 
 
